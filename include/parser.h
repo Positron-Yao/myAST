@@ -1,14 +1,15 @@
 #pragma once
-#include <cctype>
 #include <string>
-#include <sstream>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
+namespace ast {
+
 enum class TokenType {
     // 字面量
     NUMBER,
+    IDENT,
 
     // 运算符
     PLUS,   // +
@@ -18,6 +19,7 @@ enum class TokenType {
     POW,    // **
     LPAREN, // (
     RPAREN, // )
+
     // 其他
     END,    // 结束
     ERROR,  // 错误
@@ -31,6 +33,28 @@ class Token {
 
         Token(TokenType t, std::string const &lex, size_t pos=0): type(t), value(lex), pos(pos) {}
         Token(TokenType t, double val, size_t pos=0): type(t), value(val), pos(pos) {}
+
+    private:
+        struct Visitor {
+            std::string operator()(double v) {return std::to_string(v);}
+            std::string operator()(std::string v) {return v;}
+        };
+        std::unordered_map<TokenType, std::string> token_names = {
+            { TokenType::NUMBER, "NUMBER" },
+            { TokenType::IDENT, "IDENT" },
+            { TokenType::PLUS, "PLUS" },
+            { TokenType::MINUS, "MINUS" },
+            { TokenType::MUL, "MUL" },
+            { TokenType::DIV, "DIV" },
+            { TokenType::POW, "POW" },
+            { TokenType::LPAREN, "LPAREN" },
+            { TokenType::RPAREN, "RPAREN" },
+            { TokenType::END, "END" },
+            { TokenType::ERROR, "ERROR" },
+        };
+
+    public:
+        std::string show();
 };
 
 class Lexer {
@@ -67,7 +91,7 @@ class Lexer {
          * 他这个弄的更聪明一点，直接截取字符串然后转换数字
          */
         Token read_number();
-        // [TODO]: 剩几个没写完
+        Token read_identifier();
         Token read_operator();
         bool is_operator_start(char c);
 };
@@ -88,3 +112,4 @@ class Parser {
         double parse_number();
 };
 
+} // ast

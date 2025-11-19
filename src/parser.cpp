@@ -1,3 +1,5 @@
+#include <cctype>
+#include <sstream>
 #include "parser.h"
 
 /*
@@ -5,6 +7,16 @@
  * T -> F { (*|/) F } | F ** F
  * F -> ( E ) | number
  */
+
+namespace ast {
+
+// class Token
+
+std::string Token::show() {
+    return Token::token_names[type] + " \t(" + std::to_string(pos) + "): \t" + std::visit(Token::Visitor{}, value);
+}
+
+// class Lexer
 
 std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
@@ -38,7 +50,7 @@ void Lexer::advance() {
 }
 
 void Lexer::skip_whitespace() {
-    while (pos > input.size() && isspace(input[pos])) {
+    while (pos < input.size() && isspace(input[pos])) {
         advance();
     }
 }
@@ -58,7 +70,9 @@ Token Lexer::next_token() {
     }
 
     // 标识符 / 关键字
-    // 暂时用不上
+    if (isalpha(current) || current == '_') {
+        return read_identifier();
+    }
 
     // 运算符
     if (is_operator_start(current)) {
@@ -68,34 +82,70 @@ Token Lexer::next_token() {
     return Token(TokenType::ERROR, "Invalid character", pos);
 }
 
-/*
- * 读取数字字面值
- *
- * 他这个弄的更聪明一点，直接截取字符串然后转换数字
- */
 Token Lexer::read_number() {
     size_t start = pos;
-    while (pos < input.size() && isdigit(peek())) {
+    // 允许数字字面值中出现'_'
+    while (pos < input.size() && (isdigit(peek()) || peek() == '_')) {
         advance();
     }
 
     // 浮点数
     if (peek() == '.' && isdigit(peek_next())) {
         advance();
-        while (pos < input.size() && isdigit(peek())) {
+        while (pos < input.size() && (isdigit(peek()) || peek() == '_')) {
             advance();
         }
     }
 
     std::string num_str = input.substr(start, pos - start);
-    double value = stod(num_str);
+    // 去除'_'
+    std::stringstream ss;
+    for (char c: num_str) {
+        if (c != '_') {
+            ss << c;
+        }
+    }
+    double value = stod(ss.str());
 
     return Token(TokenType::NUMBER, value, start);
 }
 
-// [TODO]: 剩几个没写完
-Token Lexer::read_operator() {return Token(TokenType::ERROR, "Not implemented", pos);}
-bool Lexer::is_operator_start(char c) {return true;}
+Token Lexer::read_identifier() {
+    size_t start = pos;
+    while (pos < input.size() && (isalpha(peek()) || peek() == '_' || isdigit(peek()))) {
+        advance();
+    }
+
+    std::string id_str = input.substr(start, pos - start);
+    return Token(TokenType::IDENT, id_str, start);
+}
+
+Token Lexer::read_operator() {
+    size_t start = pos;
+    char current;
+    switch(current = peek()) {
+        case '+':
+        case '-':
+        case '/':
+        case '(':
+        case ')':
+        case '*':
+            advance();
+            switch (current = peek()) {
+                case '*':
+                    // power
+                    advance();
+            }
+    }
+    std::string op_str = input.substr(start, pos - start);
+    return Token(operators[op_str], op_str, start);
+}
+
+bool Lexer::is_operator_start(char c) {
+    return c == '+' || c == '-' || c == '/' || c == '*' || c == '(' || c == ')';
+}
+
+// class Parser
 
 double Parser::parse() {
     skip_whitespace();
@@ -192,3 +242,5 @@ double Parser::parse_number() {
     }
     return result;
 }
+
+} // ast
