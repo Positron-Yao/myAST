@@ -1,0 +1,11 @@
+[
+{
+  "directory": "/home/ely/desktop/AST/SyntaxParser",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-g", "-O0", "-Iinclude", "-o", "build/.objs/SyntaxParser/linux/x86_64/debug/src/parser.cpp.o", "src/parser.cpp"],
+  "file": "src/parser.cpp"
+},
+{
+  "directory": "/home/ely/desktop/AST/SyntaxParser",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-g", "-O0", "-Iinclude", "-o", "build/.objs/SyntaxParser/linux/x86_64/debug/src/main.cpp.o", "src/main.cpp"],
+  "file": "src/main.cpp"
+}]
