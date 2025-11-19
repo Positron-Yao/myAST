@@ -1,23 +1,38 @@
 #include <iostream>
 #include <string>
+#include "lexer.h"
 #include "parser.h"
 using namespace std;
 
 void repl() {
-    std::string input;
+    string input;
     while (true) {
-        std::cout << "> ";
-        getline(std::cin, input);
-        ast::Parser parser(input);
-        std::cout << "= " << parser.parse() << "\n";
+        cout << "> ";
+        getline(cin, input);
+        ast::Lexer lexer(input);
+        vector<ast::Token> ts = lexer.tokenize();
+        for (auto t: ts) {
+            cout << t.show() << "\n";
+        }
+        ast::Parser parser(ts);
+        cout << "= " << parser.parse() << "\n";
+    }
+}
+
+void lexer_repl() {
+    string input;
+    while (true) {
+        cout << "> ";
+        getline(cin, input);
+        ast::Lexer lexer(input);
+        vector<ast::Token> ts = lexer.tokenize();
+        for (auto t: ts) {
+            cout << t.show() << "\n";
+        }
     }
 }
 
 int main() {
-    ast::Lexer lexer("191_9810 * a + 1.14514 * shit + __inner_variable_1__ / 5 + 2 ** ( 350 + 234 )");
-    vector<ast::Token> ts = lexer.tokenize();
-    for (auto t: ts) {
-        cout << t.show() << endl;
-    }
+    repl();
     return 0;
 }
