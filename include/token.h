@@ -65,6 +65,7 @@ class Token {
 
     public:
         std::string show();
+        std::string get_str();
         double get_num();
 };
 

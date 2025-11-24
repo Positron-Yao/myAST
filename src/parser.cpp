@@ -1,12 +1,20 @@
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 #include "parser.h"
 
 /*
+ * E: Expression
+ * T: Term
+ * P: Primary
+ * U: 
+ * F: Factor
+ *
  * E -> T { (+|-) T }
  * T -> P { (*|/) P }
- * P -> F { ** P }
- * F -> ( E ) | number
+ * P -> U { ** P }
+ * U -> ident F | F
+ * F -> ( E ) | number | ident
  */
 
 namespace ast {
@@ -62,7 +70,7 @@ double Parser::parse_T() {
 }
 
 double Parser::parse_P() {
-    double left = parse_F();
+    double left = parse_U();
     while (pos < input.size() && input[pos].type == ast::TokenType::POW) {
         pos++;
         double exponent = parse_P();
@@ -71,19 +79,41 @@ double Parser::parse_P() {
     return left;
 }
 
-double Parser::parse_F() {
-    if (pos < input.size() && input[pos].type == ast::TokenType::LPAREN) {
+double Parser::parse_U() {
+    double left = 0;
+    if (pos < input.size() && input[pos].type == ast::TokenType::IDENT) {
+        // [TODO]: 实现函数调用解析
+        std::cout << "\tcall:\t" << input[pos].get_str() << "\n";
         pos++;
-        double result = parse_E();
-        if (pos < input.size() && input[pos].type == ast::TokenType::RPAREN) {
-            pos++;
-            return result;
-        } else {
-            throw std::runtime_error("Expected )");
-        }
     } else {
-        return parse_number();
+        left = parse_F();
     }
+    return left;
+}
+
+double Parser::parse_F() {
+    if (pos < input.size()) { 
+        switch (input[pos].type) {
+            case ast::TokenType::LPAREN: {
+                pos++;
+                double result = parse_E();
+                if (pos < input.size() && input[pos].type == ast::TokenType::RPAREN) {
+                    pos++;
+                    return result;
+                } else {
+                    throw std::runtime_error("Expected )");
+                }
+            }
+            case ast::TokenType::IDENT:
+                // [TODO]: 实现变量解析
+                return 0;
+            case ast::TokenType::NUMBER:
+                return parse_number();
+            default:
+                return 0;
+        }
+    }
+    return 0;
 }
 
 double Parser::parse_number() {

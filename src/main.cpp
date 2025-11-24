@@ -15,7 +15,8 @@ void repl() {
             cout << t.show() << "\n";
         }
         ast::Parser parser(ts);
-        cout << "= " << parser.parse() << "\n";
+        double res = parser.parse();
+        cout << "= " << res << "\n";
     }
 }
 
