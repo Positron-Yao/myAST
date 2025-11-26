@@ -19,6 +19,7 @@ class Lexer {
             { "**", TokenType::POW },
             { "(", TokenType::LPAREN },
             { ")", TokenType::RPAREN },
+            { ",", TokenType::COMMA },
         };
 
     public:

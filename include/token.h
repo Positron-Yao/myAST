@@ -20,6 +20,7 @@ enum class TokenType {
     POW,    // **
     LPAREN, // (
     RPAREN, // )
+    COMMA,  // ,
 
     // 其他
     END,    // 结束
@@ -59,6 +60,7 @@ class Token {
             { TokenType::POW, "POW" },
             { TokenType::LPAREN, "LPAREN" },
             { TokenType::RPAREN, "RPAREN" },
+            { TokenType::COMMA, "COMMA" },
             { TokenType::END, "END" },
             { TokenType::ERROR, "ERROR" },
         };

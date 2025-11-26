@@ -132,6 +132,7 @@ Token Lexer::read_operator() {
         case '/':
         case '(':
         case ')':
+        case ',':
             advance();
             break;
     }
@@ -140,7 +141,7 @@ Token Lexer::read_operator() {
 }
 
 bool Lexer::is_operator_start(char c) {
-    return c == '+' || c == '-' || c == '/' || c == '*' || c == '(' || c == ')';
+    return c == '+' || c == '-' || c == '/' || c == '*' || c == '(' || c == ')' || c == ',';
 }
 
 } // ast

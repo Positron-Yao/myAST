@@ -7,13 +7,13 @@
  * E: Expression
  * T: Term
  * P: Primary
- * U: 
+ * U: Unary
  * F: Factor
  *
  * E -> T { (+|-) T }
  * T -> P { (*|/) P }
  * P -> U { ** P }
- * U -> ident F | F
+ * U -> ident ( F { , F } ) | F
  * F -> ( E ) | number | ident
  */
 
@@ -82,12 +82,16 @@ double Parser::parse_P() {
 double Parser::parse_U() {
     double left = 0;
     if (pos < input.size() && input[pos].type == ast::TokenType::IDENT) {
-        // [TODO]: 实现函数调用解析
-        std::cout << "\tcall:\t" << input[pos].get_str() << "\n";
-        pos++;
-    } else {
-        left = parse_F();
+        if (pos + 1 < input.size() && input[pos + 1].type == ast::TokenType::LPAREN) {
+            std::cout << "\tcall:\t" << input[pos].get_str() << "\n";
+            pos += 2;
+            // [TODO]: 实现函数调用解析
+            // 设计函数参数栈
+            // 解析逗号表达式的参数
+            return left;
+        }
     }
+    left = parse_F();
     return left;
 }
 

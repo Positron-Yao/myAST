@@ -16,8 +16,8 @@ class Parser {
         double parse_E();
         double parse_T();
         double parse_P();
-        double parse_F();
         double parse_U();
+        double parse_F();
         double parse_number();
 };
 
